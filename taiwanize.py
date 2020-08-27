@@ -1,6 +1,6 @@
 #import cn2tw
 from pptx import Presentation
-from langconv import *
+from langconv import Converter
 
 def Traditional2Simplified(sentence): #繁體轉簡體
     sentence = str(sentence)
