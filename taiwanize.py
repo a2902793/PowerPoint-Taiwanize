@@ -1,6 +1,8 @@
+#!/usr/bin/env python
 from pptx import Presentation
 from langconv import Converter
-
+from pathlib import Path
+import argparse, sys, os
 
 def Traditional2Simplified(sentence):  # 繁體轉簡體
     sentence = Converter('zh-hans').convert(str(sentence))
@@ -11,9 +13,8 @@ def Simplified2Traditional(sentence):  # 簡體轉繁體
     sentence = Converter('zh-hant').convert(str(sentence))
     return sentence
 
-
-def run():
-    prs = Presentation("example.pptx")
+def PowerPoint(filepath):
+    prs = Presentation(filepath)
     for slide in prs.slides:                                         # 每張投影片
         for shape in slide.shapes:                                   # 每張投影片/每個物件
             if shape.has_text_frame:                                 # 判斷每張投影片/每個物件是否包含文字框
@@ -33,6 +34,26 @@ def run():
                         """
     prs.save("example_TW.pptx")
 
+def main():
+    parser = argparse.ArgumentParser(description='【台灣化（Taiwanized），一個將中國用詞用語翻成台灣化的 Python 腳本。】')
+    parser.add_argument('filename', metavar='F', nargs='*', help='檔案名稱，範例："python taiwanized.py example.pptx"')
+    parser.add_argument('-p', '--ppt', '--pptx', action='store_true', help='將此資料夾內的所有 PowerPoint 檔台灣化')
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(1)
+    args = parser.parse_args()
+    
+    if args.filename:
+        for file in args.filename:
+            if Path(file).suffix == '.pptx':
+                PowerPoint(file)
+            else:
+                print("目前不支援檔案: " + '"' + file + '"')
+    if args.ppt:
+        for file in os.listdir("./"):
+            if Path(file).suffix in (".ppt", ".pptx"):
+                PowerPoint(file)
+
 
 if __name__ == "__main__":
-    run()
+    main()
