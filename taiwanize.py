@@ -2,7 +2,7 @@
 from pptx import Presentation
 from langconv import Converter
 from pathlib import Path
-import argparse, sys
+import argparse, sys, os
 
 def Traditional2Simplified(sentence):  # 繁體轉簡體
     sentence = Converter('zh-hans').convert(str(sentence))
@@ -36,16 +36,23 @@ def PowerPoint(filepath):
 
 def main():
     parser = argparse.ArgumentParser(description='【台灣化（Taiwanized），一個將中國用詞用語翻成台灣化的 Python 腳本。】')
-    parser.add_argument('filename', metavar='F', nargs='+', help='檔案名稱，範例："python taiwanized.py example.pptx"')
+    parser.add_argument('filename', metavar='F', nargs='*', help='檔案名稱，範例："python taiwanized.py example.pptx"')
+    parser.add_argument('-p', '--ppt', '--pptx', action='store_true', help='將此資料夾內的所有 PowerPoint 檔台灣化')
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(1)
     args = parser.parse_args()
-    for file in args.filename:
-        if Path(file).suffix == '.pptx':
-            PowerPoint(file)
-        else:
-            print("目前不支援檔案: " + '"' + file + '"')
+    
+    if args.filename:
+        for file in args.filename:
+            if Path(file).suffix == '.pptx':
+                PowerPoint(file)
+            else:
+                print("目前不支援檔案: " + '"' + file + '"')
+    if args.ppt:
+        for file in os.listdir("./"):
+            if Path(file).suffix in (".ppt", ".pptx"):
+                PowerPoint(file)
 
 
 if __name__ == "__main__":
